@@ -19,27 +19,15 @@ const initialState: BoardsState = {
 }
 
 export const fetchBoards = createAsyncThunk('boards/fetchBoards', async () => {
-  const response = await api.get('/boards')
-  console.log('[fetchBoards] raw keys:', Object.keys(response.data))
-  console.log('[fetchBoards] raw:', JSON.stringify(response.data).slice(0, 300))
-  return response.data.boards as BoardProps[]
+  const response = await api.get<{ data: { boards: BoardProps[] } }>('/boards')
+  return response.data.data.boards
 })
 
 export const fetchActiveBoard = createAsyncThunk(
   'boards/fetchActiveBoard',
   async () => {
-    const response = await api.get<{ board: BoardProps }>('/boards/active')
-    const board = response.data.board
-    console.log('[fetchActiveBoard] response:', {
-      boardId: board?.id,
-      boardName: board?.name,
-      columns: board?.columns?.map((c) => ({
-        id: c.id,
-        name: c.name,
-        taskCount: c.tasks?.length ?? 0,
-      })),
-    })
-    return board
+    const response = await api.get<{ data: { board: BoardProps } }>('/boards/active')
+    return response.data.data.board
   },
 )
 
