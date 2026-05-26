@@ -27,6 +27,9 @@ export const fetchActiveBoard = createAsyncThunk(
   'boards/fetchActiveBoard',
   async () => {
     const response = await api.get<{ board: BoardProps }>('/boards/active')
+    if (!response.data.board) {
+      console.warn('[fetchActiveBoard] API returned empty board:', response.data)
+    }
     return response.data.board
   },
 )
@@ -64,11 +67,14 @@ const boardsSlice = createSlice({
       })
       .addCase(fetchActiveBoard.fulfilled, (state, action) => {
         state.isValidatingActiveBoard = false
-        state.activeBoard = action.payload ?? undefined
+        // só sobrescreve se a API retornou um board válido
+        if (action.payload) {
+          state.activeBoard = action.payload
+        }
       })
       .addCase(fetchActiveBoard.rejected, (state) => {
         state.isValidatingActiveBoard = false
-        state.activeBoard = undefined
+        // não limpa o board em caso de erro — mantém o último estado conhecido
       })
   },
 })
