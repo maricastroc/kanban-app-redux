@@ -20,6 +20,7 @@ const initialState: BoardsState = {
 
 export const fetchBoards = createAsyncThunk('boards/fetchBoards', async () => {
   const response = await api.get<{ boards: BoardProps[] }>('/boards')
+  console.log('[fetchBoards] response:', response.data.boards?.map((b) => ({ id: b.id, name: b.name })))
   return response.data.boards
 })
 
@@ -27,10 +28,17 @@ export const fetchActiveBoard = createAsyncThunk(
   'boards/fetchActiveBoard',
   async () => {
     const response = await api.get<{ board: BoardProps }>('/boards/active')
-    if (!response.data.board) {
-      console.warn('[fetchActiveBoard] API returned empty board:', response.data)
-    }
-    return response.data.board
+    const board = response.data.board
+    console.log('[fetchActiveBoard] response:', {
+      boardId: board?.id,
+      boardName: board?.name,
+      columns: board?.columns?.map((c) => ({
+        id: c.id,
+        name: c.name,
+        taskCount: c.tasks?.length ?? 0,
+      })),
+    })
+    return board
   },
 )
 
