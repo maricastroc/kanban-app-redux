@@ -20,14 +20,14 @@ const initialState: BoardsState = {
 
 export const fetchBoards = createAsyncThunk('boards/fetchBoards', async () => {
   const response = await api.get<{ data: { boards: BoardProps[] } }>('/boards')
-  return response.data.data.boards
+  return response.data?.data?.boards ?? []
 })
 
 export const fetchActiveBoard = createAsyncThunk(
   'boards/fetchActiveBoard',
   async () => {
     const response = await api.get<{ data: { board: BoardProps } }>('/boards/active')
-    return response.data.data.board
+    return response.data?.data?.board ?? undefined
   },
 )
 

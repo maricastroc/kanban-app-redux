@@ -8,7 +8,7 @@ import { handleApiError } from '@/utils/handleApiError'
 import { MIN_BOARD_NAME_LENGTH, MAX_COLUMNS } from '@/utils/constants'
 import { BoardColumnProps } from '@/@types/board-column'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { fetchBoards, setActiveBoard } from '@/store/boardsSlice'
+import { fetchBoards, fetchActiveBoard, setActiveBoard } from '@/store/boardsSlice'
 import { useEffect, useState } from 'react'
 
 interface Props {
@@ -108,8 +108,16 @@ export const useBoardForm = ({ isEditing, onClose }: Props) => {
 
       toast?.success(response.data.message)
 
-      dispatch(setActiveBoard(response.data.data.board))
+      const board = response.data.data.board
+
+      // activate on the backend so fetchActiveBoard works after reload
+      if (!isEditing && board?.id) {
+        await api.patch(`boards/${board.id}/activate`)
+      }
+
+      dispatch(setActiveBoard(board))
       dispatch(fetchBoards())
+      dispatch(fetchActiveBoard())
 
       setTimeout(() => {
         onClose()

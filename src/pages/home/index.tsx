@@ -20,6 +20,7 @@ import { EmptyContainer } from '@/components/Shared/EmptyContainer'
 import { LoadingComponent } from '@/components/Shared/LoadingComponent'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { fetchBoards, fetchActiveBoard, setActiveBoard, setBoards } from '@/store/boardsSlice'
+import { api } from '@/lib/axios'
 import { useDragScroll } from '@/utils/useDragScroll'
 import { useDragAndDrop } from '@/hooks/useDragAndDrop'
 import { useAuthRedirect } from '@/hooks/useAuthRedirect'
@@ -37,6 +38,7 @@ export default function Home() {
   const [isColumnFormModalOpen, setIsColumnFormModalOpen] = useState(false)
 
   const activeBoard = useAppSelector((state) => state.boards.activeBoard)
+  const boards = useAppSelector((state) => state.boards.boards)
   const isLoading = useAppSelector(
     (state) => state.boards.isValidatingBoards || state.boards.isValidatingActiveBoard,
   )
@@ -55,6 +57,16 @@ export default function Home() {
       dispatch(fetchActiveBoard())
     }
   }, [isCheckingAuth, dispatch])
+
+  // fallback: if boards loaded but no active board, activate the first one
+  useEffect(() => {
+    if (!isLoading && boards && boards.length > 0 && !activeBoard) {
+      const firstBoard = boards[0]
+      api.patch(`boards/${firstBoard.id}/activate`).then(() => {
+        dispatch(fetchActiveBoard())
+      })
+    }
+  }, [isLoading, boards, activeBoard, dispatch])
 
   useEffect(() => {
     setBoardColumns(activeBoard?.columns)
