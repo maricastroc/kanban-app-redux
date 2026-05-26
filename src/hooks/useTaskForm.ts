@@ -147,7 +147,7 @@ export const useTaskForm = ({
         name: data.name,
         description: data.description || '',
         due_date: data.due_date,
-        column_id: columnId,
+        column_id: Number(columnId),
         subtasks: subtasks.map((subtask, index) => ({
           ...subtask,
           order: index,
@@ -173,7 +173,7 @@ export const useTaskForm = ({
       if (initialColumn) {
         setStatus(initialColumn.name)
         setValue('status', initialColumn.name)
-        setColumnId(initialColumn.id as string)
+        setColumnId(initialColumn.id)
       }
     }
   }, [activeBoard, isEditing, setValue])

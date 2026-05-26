@@ -183,7 +183,7 @@ export function TaskFormModal({
           statusRef={statusRef}
           activeBoard={activeBoard}
           handleChangeStatus={async (column) => {
-            handleChangeStatus(column.name, column.id as string)
+            handleChangeStatus(column.name, column.id)
             setIsOptionsContainerOpen(false)
           }}
           isOpen={isOptionsContainerOpen}
